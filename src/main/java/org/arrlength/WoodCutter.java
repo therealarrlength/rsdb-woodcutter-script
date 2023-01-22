@@ -20,8 +20,6 @@ import org.dreambot.api.utilities.Sleep;
 import javax.swing.*;
 import java.awt.*;
 
-// Most DreamBot api methods return boolean
-
 @ScriptManifest(category = Category.WOODCUTTING, name = "Basic WoodCutter", author = "arrlength", version = 1.0)
 public class WoodCutter extends AbstractScript {
 
@@ -34,7 +32,6 @@ public class WoodCutter extends AbstractScript {
     private CoordinatesModeEnum coordinatesMode = CoordinatesModeEnum.CORNER_COORDINATES;
     private Area resourceGatheringArea = new Area();
     private Tile resourceAreaCenterCoordinates = new Tile();
-//    private int resourceAreaRadius;
 
     // Object names
     private String resourceObjectName;
@@ -130,6 +127,7 @@ public class WoodCutter extends AbstractScript {
     private void createGUI() {
 
         // Creating Java Swing frame
+        frame.setPreferredSize(new Dimension(500, 250));
         frame.setTitle("Gather resource");
         frame.setName("Frame");
         frame.setLayout(new BoxLayout(frame, BoxLayout.PAGE_AXIS));
@@ -154,7 +152,7 @@ public class WoodCutter extends AbstractScript {
         switchModeButton.setText("Switch mode");
         switchModeButton.setBackground(Color.BLUE);
 
-        JPanel resourceAreaPanel = generateGUICCResourceAreaPanel(switchModeButton);
+        JPanel resourceAreaPanel = generateGUICTCResourceAreaPanel(switchModeButton);
 
         // ** Adding settings panel to the GUI
         contentPane.add(resourceAreaPanel, BorderLayout.NORTH);
