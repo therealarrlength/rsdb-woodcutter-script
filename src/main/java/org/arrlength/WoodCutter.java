@@ -34,7 +34,7 @@ public class WoodCutter extends AbstractScript {
     private CoordinatesModeEnum coordinatesMode = CoordinatesModeEnum.CENTER_COORDINATE;
     private Area resourceGatheringArea = new Area();
     private Tile resourceAreaCenterCoordinates = new Tile();
-    private int resourceAreaRadius;
+//    private int resourceAreaRadius;
 
     // Object names
     private String resourceObjectName;
@@ -43,6 +43,7 @@ public class WoodCutter extends AbstractScript {
     private String resourceGatheringToolName;
 
     // GUI vars
+    JFrame frame = new JFrame();
     Font titleFont = new Font("Arial", Font.BOLD, 16);
 
 
@@ -116,11 +117,6 @@ public class WoodCutter extends AbstractScript {
     }
 
     // MARK: - Helper Methods
-    private void setResourceGatheringArea() {
-        resourceGatheringArea = resourceGatheringArea.generateArea(resourceAreaRadius, resourceAreaCenterCoordinates);
-        log("Resource gathering area set.");
-    }
-
     private void depositResources() {
 
         // POSSIBLY change to depositing everything and only picking up required tool
@@ -134,7 +130,6 @@ public class WoodCutter extends AbstractScript {
     private void createGUI() {
 
         // Creating Java Swing frame
-        JFrame frame = new JFrame();
         frame.setTitle("Gather resource");
         frame.setName("Frame");
         frame.setLayout(new BoxLayout(frame, BoxLayout.PAGE_AXIS));
@@ -209,6 +204,7 @@ public class WoodCutter extends AbstractScript {
                 "Tree", "Oak"
         };
         JComboBox<String> resourceComboBox = new JComboBox<>(resourceDropdownOptions);
+        resourceComboBox.setName("ResourceComboBox");
         resourceSelectionPanel.add(resourceComboBox);
 
         // ** Adding resource selection panel to the GUI
@@ -220,44 +216,13 @@ public class WoodCutter extends AbstractScript {
 
         // ** Creating run button
         JButton gatherButton = new JButton();
+        gatherButton.setName("GatherButton");
         gatherButton.setText("Gather");
         gatherButton.setBackground(Color.GREEN);
 
         // ** Setting listener
         gatherButton.addActionListener(listener -> {
-            if (!isScriptRunning || isInitialRun) {
-                // Setting variables
-                resourceObjectName = String.valueOf(resourceComboBox.getSelectedItem());
-
-                setResourceVars();
-
-                // Setting resource gathering area
-                JTextField xField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCXTextField");
-                JTextField yField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCYTextField");
-                JTextField zField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCZTextField");
-                JTextField radiusField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCRadiusTextField");
-
-                log(xField.getText());
-                resourceAreaCenterCoordinates.setX(Integer.valueOf(xField.getText()));
-                resourceAreaCenterCoordinates.setY(Integer.valueOf(yField.getText()));
-                resourceAreaCenterCoordinates.setZ(Integer.valueOf(zField.getText()));
-                resourceAreaRadius = Integer.valueOf(radiusField.getText());
-                this.setResourceGatheringArea();
-
-                isScriptRunning = true;
-                isInitialRun = false;
-                gatherButton.setText("Stop");
-                gatherButton.setBackground(Color.RED);
-                log("Started " + resourceObjectActionName + " " + resourceObjectName);
-
-                timer.start();
-            } else {
-                isScriptRunning = false;
-                gatherButton.setText("Gather");
-                gatherButton.setBackground(Color.GREEN);
-                log("Stopped gathering");
-            }
-
+            handleGatherButtonPress();
         });
 
         buttonsPanel.add(gatherButton);
@@ -288,6 +253,67 @@ public class WoodCutter extends AbstractScript {
 //        });
 //
 //        settingsPanel.add(lootCheckBox);
+
+    }
+
+    private void handleGatherButtonPress() {
+
+        JComboBox<String> resourceComboBox = (JComboBox<String>) AWTHelper.getChildComponentByName(frame, "ResourceComboBox");
+        JPanel resourceAreaPanel = (JPanel) AWTHelper.getChildComponentByName(frame, "ResourceAreaPanel");
+        JButton gatherButton = (JButton) AWTHelper.getChildComponentByName(frame, "GatherButton");
+
+        if (!isScriptRunning || isInitialRun) {
+            setResourceArea();
+
+            // Setting variables
+            resourceObjectName = String.valueOf(resourceComboBox.getSelectedItem());
+            setResourceVars();
+
+            isScriptRunning = true;
+            isInitialRun = false;
+            gatherButton.setText("Stop");
+            gatherButton.setBackground(Color.RED);
+            log("Started " + resourceObjectActionName + " " + resourceObjectName);
+
+            timer.start();
+        } else {
+            isScriptRunning = false;
+            gatherButton.setText("Gather");
+            gatherButton.setBackground(Color.GREEN);
+            log("Stopped gathering");
+        }
+
+    }
+
+    private void setResourceArea() {
+        JPanel resourceAreaPanel = (JPanel) AWTHelper.getChildComponentByName(frame, "ResourceAreaPanel");
+
+        if (coordinatesMode == CoordinatesModeEnum.CENTER_COORDINATE) {
+            JTextField xField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCXTextField");
+            JTextField yField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCYTextField");
+            JTextField zField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCZTextField");
+            JTextField radiusField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CCRadiusTextField");
+
+            resourceAreaCenterCoordinates.setX(Integer.valueOf(xField.getText()));
+            resourceAreaCenterCoordinates.setY(Integer.valueOf(yField.getText()));
+            resourceAreaCenterCoordinates.setZ(Integer.valueOf(zField.getText()));
+
+            int resourceAreaRadius = Integer.valueOf(radiusField.getText());
+            resourceGatheringArea = resourceGatheringArea.generateArea(resourceAreaRadius, resourceAreaCenterCoordinates);
+        } else if (coordinatesMode == CoordinatesModeEnum.CORNER_COORDINATES) {
+            JTextField c1xField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CTC1XTextField");
+            JTextField c1yField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CTC1YTextField");
+            JTextField c2xField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CTC2XTextField");
+            JTextField c2yField = (JTextField) AWTHelper.getChildComponentByName(resourceAreaPanel, "CTC2YTextField");
+
+            int c1x = Integer.valueOf(c1xField.getText());
+            int c1y = Integer.valueOf(c1yField.getText());
+            int c2x = Integer.valueOf(c2xField.getText());
+            int c2y = Integer.valueOf(c2yField.getText());
+
+            resourceGatheringArea = new Area(c1x, c1y, c2x, c2y);
+            resourceAreaCenterCoordinates = resourceGatheringArea.getCenter();
+        }
 
     }
 
