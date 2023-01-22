@@ -31,7 +31,7 @@ public class WoodCutter extends AbstractScript {
     private Timer timer;
 
     // Action area setting
-    private CoordinatesModeEnum coordinatesMode = CoordinatesModeEnum.CENTER_COORDINATE;
+    private CoordinatesModeEnum coordinatesMode = CoordinatesModeEnum.CORNER_COORDINATES;
     private Area resourceGatheringArea = new Area();
     private Tile resourceAreaCenterCoordinates = new Tile();
 //    private int resourceAreaRadius;
