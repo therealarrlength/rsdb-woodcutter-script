@@ -152,7 +152,7 @@ public class WoodCutter extends AbstractScript {
         // ** Creating run button
         JButton switchModeButton = new JButton();
         switchModeButton.setText("Switch mode");
-        switchModeButton.setBackground(Color.GREEN);
+        switchModeButton.setBackground(Color.BLUE);
 
         JPanel resourceAreaPanel = generateGUICCResourceAreaPanel(switchModeButton);
 
