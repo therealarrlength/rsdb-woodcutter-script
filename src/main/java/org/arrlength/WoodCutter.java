@@ -331,6 +331,8 @@ public class WoodCutter extends AbstractScript {
         cornerOneInputsPanel.add(cornerOneYCoordinateLabel);
         cornerOneInputsPanel.add(cornerOneYCoordinateTextField);
 
+        resourceAreaPanel.add(cornerOneInputsPanel);
+
         // ** Setting center tile row label
         JLabel cornerTwoCoordinatesLabel = new JLabel();
         cornerTwoCoordinatesLabel.setText("Corner 2:");
@@ -355,7 +357,7 @@ public class WoodCutter extends AbstractScript {
         cornerTwoInputsPanel.add(cornerTwoYCoordinateLabel);
         cornerTwoInputsPanel.add(cornerTwoYCoordinateTextField);
 
-        resourceAreaPanel.add(cornerOneInputsPanel);
+        resourceAreaPanel.add(cornerTwoInputsPanel);
 
         return resourceAreaPanel;
     }
